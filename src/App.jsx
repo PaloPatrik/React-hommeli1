@@ -39,17 +39,31 @@ function palaute(nimi) {
     setBad(bad +1)
   }
 }
-
-  return (
-    <div>
-      <h2>Anna palautetta</h2>
-      <button onClick={() => palaute('good')}>Hyvä</button>
-      <button onClick={() => palaute('neutral')}>Neutraali</button>
-      <button onClick={() => palaute('bad')}>Huono</button>
-      <h2>Tilastot</h2>
-      <Statistics good={good} neutral={neutral} bad={bad} all={all} />
-    </div>
-  )
+  if (good === 0 && neutral === 0 && bad === 0) {
+    return(
+      <div>
+         <h2>Anna palautetta</h2>
+        <button onClick={() => palaute('good')}>Hyvä</button>
+        <button onClick={() => palaute('neutral')}>Neutraali</button>
+        <button onClick={() => palaute('bad')}>Huono</button>
+        <h2>Tilastot</h2>
+        <p>
+          Ei palautetta annettu
+        </p>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <h2>Anna palautetta</h2>
+        <button onClick={() => palaute('good')}>Hyvä</button>
+        <button onClick={() => palaute('neutral')}>Neutraali</button>
+        <button onClick={() => palaute('bad')}>Huono</button>
+        <h2>Tilastot</h2>
+        <Statistics good={good} neutral={neutral} bad={bad} all={all} />
+      </div>
+    )
+  }
 }
 
 export default App
