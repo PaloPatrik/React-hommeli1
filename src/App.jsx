@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const StatisticLine = (props) => {
   return(
-    <p>{props.text + ' ' + props.value}</p>
+    <tr><td>{props.text + ' ' + props.value}</td></tr>
   )
 }
 
@@ -11,14 +11,21 @@ const Statistics = (props) => {
   const average = (good + (neutral * 0) + -bad) / all;
   let positive = (props.good * 100) / props.all
   return(
-    <div>
+    <tbody>
       <StatisticLine text="good" value = {good} />
       <StatisticLine text="neutral" value = {neutral} />
       <StatisticLine text="bad" value = {bad} />
       <StatisticLine text="all" value = {all} />
       <StatisticLine text="average" value = {average} />
       <StatisticLine text="positive" value = {positive} />
-    </div>
+    </tbody>
+  )
+}
+
+const Button = (props) => {
+  console.log(props)
+  return (
+    <button onClick={props.func}>{props.text}</button>
   )
 }
 
@@ -28,24 +35,25 @@ const App = () => {
   const [bad, setBad] = useState(0)
   const all = good + neutral + bad
 
-function palaute(nimi) {
-  if (nimi === 'good') {
-    setGood(good +1) 
+  const hyvaPalaute = () => {
+    setGood(good + 1)
   }
-  if (nimi === 'neutral') {
-    setNeutral(neutral +1)
+
+  const neutraaliPalaute = () => {
+    setNeutral(neutral + 1)
   }
-  if (nimi === 'bad') {
-    setBad(bad +1)
+
+  const huonoPalaute = () => {
+    setBad(bad + 1)
   }
-}
+  
   if (good === 0 && neutral === 0 && bad === 0) {
     return(
       <div>
-         <h2>Anna palautetta</h2>
-        <button onClick={() => palaute('good')}>Hyvä</button>
-        <button onClick={() => palaute('neutral')}>Neutraali</button>
-        <button onClick={() => palaute('bad')}>Huono</button>
+          <h2>Anna palautetta</h2>
+          <Button text='good' func={hyvaPalaute} />
+          <Button text='neutral' func={neutraaliPalaute} />
+          <Button text='bad' func={huonoPalaute} />
         <h2>Tilastot</h2>
         <p>
           Ei palautetta annettu
@@ -54,14 +62,20 @@ function palaute(nimi) {
     )
   } else {
     return (
-      <div>
-        <h2>Anna palautetta</h2>
-        <button onClick={() => palaute('good')}>Hyvä</button>
-        <button onClick={() => palaute('neutral')}>Neutraali</button>
-        <button onClick={() => palaute('bad')}>Huono</button>
-        <h2>Tilastot</h2>
+      
+        <table>
+        <thead><tr><th>Anna palautetta</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><Button text='good' func={hyvaPalaute} /></td>
+          <td><Button text='neutral' func={neutraaliPalaute} /></td>
+          <td><Button text='bad' func={huonoPalaute} /></td>
+        </tr>
+        </tbody>
+        <thead><tr><th>Tilastot</th></tr></thead>
         <Statistics good={good} neutral={neutral} bad={bad} all={all} />
-      </div>
+        </table>
+      
     )
   }
 }
