@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from 'react'    
 
 const Button = (props) => {
   return(
@@ -22,12 +22,20 @@ const App = () => {
     let satunnainen = Math.floor((Math.random() * anecdotes.length) + 1)
     setSelected(satunnainen)
   }
-  
+  const [points, setPoints] = useState(new Uint8Array(anecdotes.length));
+
+  const handleVote = () => {
+    let copy = [...points];
+    copy[selected] += 1;
+    setPoints(copy);
+  }
 
   return (
     <div>
       {anecdotes[selected]}
       <br/>
+      has {points[selected]} votes!
+      <button onClick={handleVote}>vote</button>
       <Button seuraava={seuraava} />
     </div>
   )
