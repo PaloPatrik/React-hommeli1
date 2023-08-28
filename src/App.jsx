@@ -1,21 +1,19 @@
 const Total = (props) => {
   return(
-  <div>
   <p>
-    Number of exercises:{" "}
-    {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}
+    Number of exercises: 
+    {
+      props.course.parts.reduce((total, part) => total + part.exercises, 0)
+    }
   </p>
-  </div>
   )
 }
 const Course = (props) => {
-  console.log(props.course)
   return(
     <div>
     <Header course={props.course.name}/>
     <Content course={props.course}/>
-    {/* <Part /> */}
-    <Total parts={props.course.parts}/>
+    <Total course={props.course}/>
     </div>
   )
 }
@@ -29,10 +27,10 @@ const Course = (props) => {
   const Content = (props) => {
     return (
       <div>
-      <Part nimi={props.course.parts[0].name} maara={props.course.parts[0].exercises}/>
-      <Part nimi={props.course.parts[1].name} maara={props.course.parts[1].exercises}/>
-      <Part nimi={props.course.parts[2].name} maara={props.course.parts[2].exercises}/>
-    </div>
+        {
+          props.course.parts.map(part => <Part nimi={part.name} maara={part.exercises}/>) 
+        }
+      </div>
     )
   }
   const Part = (props) => {
