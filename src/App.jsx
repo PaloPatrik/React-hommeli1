@@ -9,27 +9,67 @@ const checkValidity = (obj, arr) => {
   return false;
 }
 
+const Filtered = (props) => {
+    return(
+      <div>
+        filter shown with <input type='text' onChange={props.func}/>
+      </div>
+    )
+}
+
+const PersonForm = (props) => {
+  return(
+    <div>
+      <div>
+          name: <input onChange={(e) => props.setNewName(e.target.value)}/><br/>
+          number: <input onChange={(e) => props.setNewNumber(e.target.value)}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+    </div>
+  )
+}
+const Persons = (props) => {
+  return(
+    <div>
+      {
+        props.filter == "" ?
+          props.persons.map((person) =>
+          <p>{person.name  + " "}
+          {person.number}</p>)
+          :
+          props.filteredPersons.map((person) =>
+          <p>{person.name  + " "}
+          {person.number}</p>)
+         
+      }
+    </div>
+  )
+}
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040 2867465'  },
     { name: 'Ada Lovelace', number: '39-44-5323523' },
     { name: 'Dan Abramov', number: '12-43-234345' },
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
-  
+  ])
   const [filter, setFilter] = useState('')
-
-  const filteredPersons = persons.filter((person) => 
-  person.name.toLowerCase().includes(filter.toLowerCase())
-  )
-
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filteredPersons, setFilteredPerson] = useState([])
+  
+  const handleFilter = (e) => {
+    setFilter(e.target.value)
+    const result = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
+    )
+    setFilteredPerson(result)
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-
     const obj = {name: newName, number: newNumber};
-
     if (checkValidity(obj, persons)) {
       alert(`${newName} is already added to phonebook`)
       alert(`${newNumber} is already added to phonebook`)
@@ -38,30 +78,32 @@ const App = () => {
     }
   }
 
-  const [newNumber, setNewNumber] = useState('')
-
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-      filter shown with <input type='text' onChange={(e) => setFilter(e.target.value)}/>
-      </div>
+
+      <Filtered
+        func={handleFilter}
+      />
       <h2>add new</h2>
+
       <form onSubmit={handleSubmit}>
-        <div>
-          name: <input onChange={(e) => setNewName(e.target.value)}/><br/>
-          number: <input onChange={(e) => setNewNumber(e.target.value)}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
+        <PersonForm 
+          setNewNumber={setNewNumber}
+          setNewName={setNewName}
+        />
       </form>
+
+
       <h2>Numbers</h2>
-      {filteredPersons.map((persons) => 
-      <p>{persons.name  + " "}
-      {persons.number}</p>)}
+      <Persons 
+        filteredPersons={filteredPersons}
+        filter={filter}
+        persons={persons}
+      />
     </div>
   )
 }
+
 
 export default App
