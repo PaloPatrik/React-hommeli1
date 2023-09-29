@@ -82,6 +82,13 @@ const App = () => {
     }else{
       setPersons([...persons, obj])
     }
+    axios.post('http://localhost:3001/persons', obj)
+    .then (response => {
+      console.log('Data apended:', response.data);
+    })
+    .catch(error => {
+      console.error('Error appending data:', error);
+    })
   }
 
   return (
