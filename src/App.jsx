@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios';
+import { getJson, exterminateJson, sendJson } from './Alljson';
 
 const checkValidity = (obj, arr) => {
   for (let j = 0; j < arr.length; j++) {
-    if(arr[j].name === obj.name, arr[j].number === obj.number){
+    if(arr[j].name === obj.name || arr[j].number === obj.number){
       return true;
     }
   }
@@ -37,12 +38,12 @@ const Persons = (props) => {
       {
         props.filter == "" ?
           props.persons.map((person) =>
-          <p>{person.name  + " "}
-          {person.number}</p>)
+          <div><p>{person.name  + " "}
+          {person.number}</p><button onClick={ () =>props.delete(person.id)}>Poista</button></div>)
           :
           props.filteredPersons.map((person) =>
-          <p>{person.name  + " "}
-          {person.number}</p>)
+          <div><p>{person.name  + " "}
+          {person.number}</p><button onClick={ () =>props.delete(person.id)}>Poista</button></div>)
          
       }
     </div>
@@ -55,15 +56,22 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filteredPersons, setFilteredPerson] = useState([])
   
+  const updataData = async () => {
+    try {
+      const data = await getJson();
+      setPersons(data);
+      
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      
+    }
+  }
+
+
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error)
-    })
-  }, []);
+    updataData();
+  }, [])
+
 
   const handleFilter = (e) => {
     setFilter(e.target.value)
@@ -73,23 +81,42 @@ const App = () => {
     setFilteredPerson(result)
   }
 
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    const obj = {name: newName, number: newNumber};
-    if (checkValidity(obj, persons)) {
-      alert(`${newName} is already added to phonebook`)
-      alert(`${newNumber} is already added to phonebook`)
-    }else{
-      setPersons([...persons, obj])
+    let copy = [...persons];
+    let objecti = {
+      name: newName,
+      number: newNumber,
+      id: (persons.length+1)
+    };
+    if(checkValidity(objecti, copy)  ){
+        objecti.number = String(objecti.number)
+        copy.push(objecti)
+        setPersons(copy)
     }
-    axios.post('http://localhost:3001/persons', obj)
-    .then (response => {
-      console.log('Data apended:', response.data);
-    })
-    .catch(error => {
-      console.error('Error appending data:', error);
-    })
+    
+    console.log(objecti, checkValidity(objecti, copy))
+    try {
+      await sendJson(objecti);
+      updataData()
+    } catch (error) {
+      console.error(error);
+    }
   }
+
+  const dataDelete = async (id) => {
+    if(window.confirm("Haluatko varmasti poistaa numeron?")){
+      try {
+        await exterminateJson(id);
+        await updataData()
+      } catch (error) {
+        console.error(error)
+      }
+    }    
+  }
+
+
 
   return (
     <div>
@@ -113,6 +140,7 @@ const App = () => {
         filteredPersons={filteredPersons}
         filter={filter}
         persons={persons}
+        delete={dataDelete}
       />
     </div>
   )
