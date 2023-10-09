@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios';
 import { getJson, exterminateJson, sendJson } from './Alljson';
+import './App.css';
 
 const checkValidity = (obj, arr) => {
   for (let j = 0; j < arr.length; j++) {
@@ -56,6 +56,12 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filteredPersons, setFilteredPerson] = useState([])
   
+  const [submit, setSubmit] = useState(false);
+  const [deletedName, setDeletedName] = useState("")
+  const [deleted, setDeleted] = useState(false);
+  const [changed, setChanged] = useState(false);
+  const [changedName, setChangedName] = useState(false);
+  
   const updataData = async () => {
     try {
       const data = await getJson();
@@ -95,10 +101,20 @@ const App = () => {
         copy.push(objecti)
         setPersons(copy)
     }
-    
+
     console.log(objecti, checkValidity(objecti, copy))
     try {
       await sendJson(objecti);
+      setSubmit(true);
+       
+        
+       
+        
+      
+      
+    setTimeout(() => {
+      setSubmit(false);
+    }, 2000);
       updataData()
     } catch (error) {
       console.error(error);
@@ -109,9 +125,23 @@ const App = () => {
     if(window.confirm("Haluatko varmasti poistaa numeron?")){
       try {
         await exterminateJson(id);
-        await updataData()
-      } catch (error) {
+        
+        setDeleted(true);
+        for (let å = 0; å < persons.length; å++ ) {
+          if (id === persons[å].id) {
+            setDeletedName(persons[å].name)
+            break
+          }
+        }
+        
+      setTimeout(() => {
+        setDeleted(false);
+      }, 2000);
+      await updataData()
+      } 
+      catch (error) {
         console.error(error)
+
       }
     }    
   }
@@ -120,6 +150,22 @@ const App = () => {
 
   return (
     <div>
+       <div className='del'>
+          {
+            submit ?
+            <p>Added {newName}</p>
+            :
+              deleted ?
+                <p>Deleted {deletedName}</p>
+              :
+                changed ?
+                  <p>Changed {changedName} </p>
+                :
+              <></>
+          }
+        </div>
+ 
+
       <h2>Phonebook</h2>
 
       <Filtered
